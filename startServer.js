@@ -23,6 +23,9 @@ async function startServer() {
   const plugins = [{
     plugin: require('@hapi/good'),
     options: {
+      ops: {
+        interval: 60000,
+      },
       reporters: {
         consoleReporter: [{
           module: '@hapi/good-console',
@@ -31,7 +34,9 @@ async function startServer() {
     },
   }, {
     plugin: require('./src'),
-    options: {},
+    options: {
+      databaseFile: path.join(__dirname, process.env.DATABASE_FILEPATH),
+    },
   }];
 
   await server.register(plugins);

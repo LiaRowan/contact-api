@@ -1,0 +1,16 @@
+{
+  "extends": "airbnb-base",
+  "globals": {
+    "describe": false,
+    "expect": false,
+    "it": false,
+  },
+  "rules": {
+    "no-use-before-define": ["error", {
+      "functions": false,
+      "classes": true,
+      "variables": true
+    }],
+    "indent": ["warn", 2, { "MemberExpression": "off" }]
+  }
+}

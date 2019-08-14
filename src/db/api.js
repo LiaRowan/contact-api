@@ -56,6 +56,21 @@ class DBApi {
       });
     });
   }
+
+  async getContact(id) {
+    return new Promise((resolve, reject) => {
+      this.db.findOne({ _id: parseInt(id, 10) }, (err, contact) => {
+        if (err) { return reject(err); }
+
+        // NeDB forces use of `_id` as primary key, so swap with `id`
+        const result = (contact)
+          ? { ...contact, id: contact._id, _id: undefined }
+          : null;
+
+        return resolve(result);
+      });
+    });
+  }
 }
 
 module.exports = DBApi;

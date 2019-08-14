@@ -41,7 +41,18 @@ class DBApi {
     return new Promise((resolve, reject) => {
       this.db.insert({ ...contact, _id: id }, (err, newDoc) => {
         if (err) { return reject(err); }
+
         return resolve({ ...newDoc, id: newDoc._id, _id: undefined });
+      });
+    });
+  }
+
+  async updateContact(id, update) {
+    return new Promise((resolve, reject) => {
+      this.db.update({ _id: parseInt(id, 10) }, update, {}, (err, numUpdated) => {
+        if (err) { return reject(err); }
+
+        return resolve(numUpdated > 0);
       });
     });
   }

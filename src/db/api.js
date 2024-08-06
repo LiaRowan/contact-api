@@ -1,9 +1,17 @@
 /* eslint-disable no-underscore-dangle */
+const DBAsync = require('./DBAsync');
 
 class DBApi {
   constructor(db) {
-    this.db = db;
+    this.db = new DBAsync(db);
     this.currentID = null;
+  }
+
+  // NeDB forces use of `_id` as primary key, so swap with `id`
+  static translateID(contact) {
+    return (contact.id === undefined)
+      ? { ...contact, id: contact._id, _id: undefined }
+      : { ...contact, _id: contact.id, id: undefined };
   }
 
   async makeID() {
@@ -23,63 +31,38 @@ class DBApi {
   }
 
   async getAllContacts() {
-    return new Promise((resolve, reject) => {
-      this.db.find({}, (err, docs) => {
-        if (err) { return reject(err); }
+    const docs = await this.db.find({});
 
-        // NeDB forces use of `_id` as primary key, so swap with `id`
-        const withSwappedId = docs.map((d) => ({ ...d, id: d._id, _id: undefined }));
-
-        return resolve(withSwappedId);
-      });
-    });
+    return docs.map(DBApi.translateID);
   }
 
   async addContact(contact) {
     const id = await this.makeID();
+    const newDoc = await this.db.insert({ ...contact, _id: id });
 
-    return new Promise((resolve, reject) => {
-      this.db.insert({ ...contact, _id: id }, (err, newDoc) => {
-        if (err) { return reject(err); }
-
-        return resolve({ ...newDoc, id: newDoc._id, _id: undefined });
-      });
-    });
+    return DBApi.translateID(newDoc);
   }
 
   async updateContact(id, update) {
-    return new Promise((resolve, reject) => {
-      this.db.update({ _id: parseInt(id, 10) }, update, {}, (err, numUpdated) => {
-        if (err) { return reject(err); }
+    const numUpdated = await this.db.update({ _id: parseInt(id, 10) }, update, {});
 
-        return resolve(numUpdated > 0);
-      });
-    });
+    return numUpdated > 0;
   }
 
   async getContact(id) {
-    return new Promise((resolve, reject) => {
-      this.db.findOne({ _id: parseInt(id, 10) }, (err, contact) => {
-        if (err) { return reject(err); }
+    const contact = await this.db.findOne({ _id: parseInt(id, 10) });
 
-        // NeDB forces use of `_id` as primary key, so swap with `id`
-        const result = (contact)
-          ? { ...contact, id: contact._id, _id: undefined }
-          : null;
+    const result = (contact)
+      ? DBApi.translateID(contact)
+      : null;
 
-        return resolve(result);
-      });
-    });
+    return result;
   }
 
   async deleteContact(id) {
-    return new Promise((resolve, reject) => {
-      this.db.remove({ _id: parseInt(id, 10) }, {}, (err, numRemoved) => {
-        if (err) { return reject(err); }
+    const numRemoved = await this.db.remove({ _id: parseInt(id, 10) }, {});
 
-        return resolve(numRemoved > 0);
-      });
-    });
+    return numRemoved > 0;
   }
 }
 

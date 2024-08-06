@@ -24,11 +24,13 @@
     "@hapi/good": "^8.2.0",
     "@hapi/good-console": "^8.1.0",
     "@hapi/hapi": "^18.3.1",
+    "@hapi/joi": "^15.1.0",
     "babel-jest": "^24.x.x",
     "dotenv": "^8.x.x",
     "eslint": "^6.x.x",
     "eslint-config-airbnb-base": "^14.x.x",
     "eslint-plugin-import": "^2.x.x",
-    "jest": "^24.x.x"
+    "jest": "^24.x.x",
+    "nedb": "^1.x.x"
   }
 }

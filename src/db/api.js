@@ -71,6 +71,16 @@ class DBApi {
       });
     });
   }
+
+  async deleteContact(id) {
+    return new Promise((resolve, reject) => {
+      this.db.remove({ _id: parseInt(id, 10) }, {}, (err, numRemoved) => {
+        if (err) { return reject(err); }
+
+        return resolve(numRemoved > 0);
+      });
+    });
+  }
 }
 
 module.exports = DBApi;
